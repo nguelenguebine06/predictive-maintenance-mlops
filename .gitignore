@@ -1,6 +1,7 @@
-# Données locales
-data/raw/
-data/processed/
+# Données suivies par DVC : ignorer uniquement les fichiers volumineux
+data/raw/MetroPT3(AirCompressor).csv
+data/processed/MetroPT3_labeled.csv
+data/processed/metropt3_feature_engineered.csv
 
 # Modèles générés
 models/
@@ -26,6 +27,20 @@ __pycache__/
 # Logs
 *.log
 
+# MLflow
+mlruns/
+
 # Système
 .DS_Store
 Thumbs.db
+
+# MLflow local
+mlflow.db
+mlflow_artifacts/
+mlruns/
+
+# Fichiers temporaires Python
+*.egg-info/
+
+# Archives de données volumineuses
+data/raw/*.zip
