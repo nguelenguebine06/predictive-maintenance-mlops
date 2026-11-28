@@ -20,7 +20,13 @@ def load_config(config_path: str = "config.yaml") -> dict:
     return config
 
 
-def load_dataset(config_path: str = "config.yaml") -> pd.DataFrame:
+
+
+def load_dataset(
+    config_path: str = "config.yaml",
+    directory_key: str = "raw_path",
+    filename_key: str = "dataset_name",
+) -> pd.DataFrame:
 
     config = load_config(config_path)
 
@@ -29,12 +35,14 @@ def load_dataset(config_path: str = "config.yaml") -> pd.DataFrame:
 
     dataset_path = (
         project_root
-        / data_config["raw_path"]
-        / data_config["dataset_name"]
+        / data_config[directory_key]
+        / data_config[filename_key]
     )
 
     if not dataset_path.is_file():
-        raise FileNotFoundError(f"Dataset not found: {dataset_path}")
+        raise FileNotFoundError(
+            f"Dataset not found: {dataset_path}"
+        )
 
     return pd.read_csv(
         dataset_path,

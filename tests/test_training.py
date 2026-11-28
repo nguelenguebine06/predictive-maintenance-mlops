@@ -58,9 +58,15 @@ def test_build_training_pipeline(config):
     pipeline = build_training_pipeline(config)
 
     assert pipeline is not None
-    assert pipeline.named_steps["imputer"] is not None
+    assert list(pipeline.named_steps.keys()) == [
+        "scaler",
+        "classifier",
+    ]
+
     assert pipeline.named_steps["scaler"] is not None
     assert pipeline.named_steps["classifier"] is not None
+
+    assert "imputer" not in pipeline.named_steps
 
 
 def test_split_features_target(config, sample_data):
@@ -121,19 +127,16 @@ def test_train_model(sample_data, config):
     assert hasattr(trained_model, "predict_proba")
 
 
-def test_train_model_with_missing_values(sample_data, config):
+def test_train_model_rejects_missing_values(sample_data, config):
     X, y = split_features_target(sample_data, config)
 
     X.loc[0, "TP2"] = np.nan
     X.loc[1, "Motor_current"] = np.nan
 
     pipeline = build_training_pipeline(config)
-    trained_model = train_model(pipeline, X, y)
 
-    probabilities = trained_model.predict_proba(X)
-
-    assert probabilities.shape == (len(X), 2)
-    assert np.isfinite(probabilities).all()
+    with pytest.raises(ValueError, match="Missing values"):
+        train_model(pipeline, X, y)
 
 
 def test_train_model_rejects_empty_data(config):
